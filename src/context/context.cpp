@@ -16,42 +16,42 @@
 #include "backends/imgui_impl_glfw.h"
 #endif
 
-namespace tabby {
-    void Context::init(ctx_init_params params) {
-	ImGui::CreateContext();
+namespace tabby
+{
+	void Context::init(CtxInitParams params)
+	{
+		ImGui::CreateContext();
 
 #ifdef TABBY_USE_OPENGL3
-	std::println("Initializing OpenGL3...");
-	ImGui_ImplOpenGL3_Init(); // Assume OpenGL is loaded
+		ImGui_ImplOpenGL3_Init(); // Assume OpenGL is loaded
 #endif
 #ifdef TABBY_USE_WIN32
-	h_wnd = WindowFromHDC((HDC*)params.hdc);
-	ImGui_ImplWin32_InitForOpenGL(h_wnd);
+		h_wnd = WindowFromHDC((HDC *)params.hdc);
+		ImGui_ImplWin32_InitForOpenGL(h_wnd);
 #endif
 #ifdef TABBY_USE_GLFW
-	std::println("Initializing GLFW...");
-	ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)params.glfw_window, true);
+		ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)params.glfwWindow, true);
 #endif
-    }
-    
-    void Context::draw() {
+	}
+
+	void Context::newFrame() {
 #ifdef TABBY_USE_OPENGL3
-	ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplOpenGL3_NewFrame();
 #endif
 #ifdef TABBY_USE_WIN32
-	ImGui_ImplWin32_NewFrame();
+		ImGui_ImplWin32_NewFrame();
 #endif
 #ifdef TABBY_USE_GLFW
-	ImGui_ImplGlfw_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
 #endif
 
-	ImGui::NewFrame();
-    }
+		ImGui::NewFrame();
+	}
 
-    void Context::postDraw() {
-	ImGui::Render();
+	void Context::render() {
+		ImGui::Render();
 #ifdef TABBY_USE_OPENGL3
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #endif
-    }
+	}
 }

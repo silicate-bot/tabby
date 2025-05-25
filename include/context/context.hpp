@@ -2,28 +2,37 @@
 #define TABBY_CONTEXT
 
 #include "util/defines.hpp"
-#include "widgets/window.hpp"
 
 #include <functional>
 #include <vector>
+#include <concepts>
 
 TABBY_NS_BEGIN
 
-class Context : public Drawable {
+class Context {
 public:
 
-    struct ctx_init_params {
+    struct CtxInitParams {
 #ifdef TABBY_USE_GLFW
-	void* glfw_window;
+	void* glfwWindow;
 #endif
 #ifdef TABBY_USE_WIN32
 	void* hdc;
 #endif
     };
 
-    void init(ctx_init_params params);
-    void draw() override;
-    void postDraw() override;
+    void init(CtxInitParams params);
+
+    void newFrame();
+    void render();
+
+    template<typename F>
+        requires std::is_invocable_v<F>
+    void draw(F&& f) {
+        this->newFrame();
+		f();
+        this->render();
+    }
 };
 
 TABBY_NS_END

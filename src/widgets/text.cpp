@@ -1,9 +1,16 @@
 #include "widgets/text.hpp"
 #include "imgui.h"
 
-namespace tabby {
-    void Text::draw() {
-	ImGui::Text("%s", this->text.c_str());
-    }
+TABBY_NS_BEGIN
+
+void text(std::string_view content) {
+    ImGui::Text("%s", content.data());
 }
 
+void text(std::string_view content, const Font& font) {
+    font.apply();
+    text(content);
+    font.unapply();
+}
+
+TABBY_NS_END

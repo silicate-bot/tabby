@@ -32,11 +32,12 @@ include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
 set(SOURCES
     src/widgets/text.cpp
     src/widgets/window.cpp
+    src/widgets/font.cpp
 
     src/context/context.cpp
 )
 
-add_library(tabby SHARED ${SOURCES})
+add_library(tabby STATIC ${SOURCES})
 add_library(tabby::tabby ALIAS tabby)
 
 target_include_directories(tabby PUBLIC ${CMAKE_SOURCE_DIR}/include)
