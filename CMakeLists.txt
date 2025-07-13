@@ -53,7 +53,7 @@ target_include_directories(tabby PUBLIC ${CMAKE_SOURCE_DIR}/lib/glad/include)
 # ImGUI
 if (NOT TABBY_NO_IMGUI)
     # CPMAddPackage("gh:ocornut/imgui#master")
-    set(imgui_SOURCE_DIR ${CMAKE_SOURCE_DIR}/lib/imgui)
+    set(imgui_SOURCE_DIR ${CMAKE_SOURCE_DIR}/lib/imgui_lib)
 
     set(IM_SOURCES
 	${imgui_SOURCE_DIR}/imgui.cpp
