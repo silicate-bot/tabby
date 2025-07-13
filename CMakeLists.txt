@@ -33,18 +33,27 @@ set(SOURCES
     src/widgets/text.cpp
     src/widgets/window.cpp
     src/widgets/font.cpp
+    src/widgets/button.cpp
+    src/widgets/layout.cpp
+    src/widgets/drag.cpp
+    src/widgets/input.cpp
+    src/widgets/checkbox.cpp
 
     src/context/context.cpp
+
+    # lib/glad/src/gl.c
 )
 
 add_library(tabby STATIC ${SOURCES})
 add_library(tabby::tabby ALIAS tabby)
 
 target_include_directories(tabby PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(tabby PUBLIC ${CMAKE_SOURCE_DIR}/lib/glad/include)
 
 # ImGUI
 if (NOT TABBY_NO_IMGUI)
-    CPMAddPackage("gh:ocornut/imgui#features/shadows")
+    # CPMAddPackage("gh:ocornut/imgui#master")
+    set(imgui_SOURCE_DIR ${CMAKE_SOURCE_DIR}/lib/imgui)
 
     set(IM_SOURCES
 	${imgui_SOURCE_DIR}/imgui.cpp

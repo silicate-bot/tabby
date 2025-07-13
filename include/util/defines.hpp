@@ -1,3 +1,4 @@
+#pragma once
 #ifndef TABBY_UTIL_DEFINES
 #define TABBY_UTIL_DEFINES
 

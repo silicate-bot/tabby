@@ -1,3 +1,4 @@
+#pragma once
 #ifndef TABBY_WIDGETS_WINDOW
 #define TABBY_WIDGETS_WINDOW
 

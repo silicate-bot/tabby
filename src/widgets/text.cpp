@@ -4,6 +4,7 @@
 TABBY_NS_BEGIN
 
 void text(std::string_view content) {
+    ImGui::AlignTextToFramePadding();
     ImGui::Text("%s", content.data());
 }
 
