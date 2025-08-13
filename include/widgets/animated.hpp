@@ -3,6 +3,8 @@
 #define TABBY_WIDGETS_ANIMATED
 
 #include "util/defines.hpp"
+#include "util/config.hpp"
+
 #include <string_view>
 #include "imgui_internal.h"
 #include <unordered_map>
@@ -29,8 +31,14 @@ T& getStoredAnimValue(
     static std::unordered_map<ImGuiID, T> animatedValues;
     auto it = animatedValues.find(imguiID);
     if (it == animatedValues.end()) {
-        animatedValues[imguiID] = initial;
-        return initial;
+        animatedValues.insert({imguiID, initial});
+
+        it = animatedValues.find(imguiID);
+        if (it == animatedValues.end()) {
+            abort();
+        }
+
+        return it->second;
     }
 
     return it->second;
@@ -42,7 +50,13 @@ T interpolateValue(
     T target,
     float speed = 15.0f
 ) {
-    return ImLerp(value, target, ImGui::GetIO().DeltaTime * speed);
+    float speedMod = TabbyGlobalCfg::get().animationSpeed;
+    if (!TabbyGlobalCfg::get().playAnimations) {
+        return target;
+    }
+
+    // don't exceed 30fps delta time so animations don't lag
+    return ImLerp(value, target, std::min(ImGui::GetIO().DeltaTime, (1.0f / 30.0f)) * speed * speedMod);
 }
 
 inline ImColor interpolateValue(

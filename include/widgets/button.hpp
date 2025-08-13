@@ -9,7 +9,8 @@
 
 TABBY_NS_BEGIN
 
-WidgetState button(std::string_view content);
+WidgetState button(std::string_view content, float width = 1.0f);
+WidgetState button_selector(std::string_view content, bool selected);
 
 TABBY_NS_END
 

@@ -10,9 +10,9 @@ TABBY_NS_BEGIN
 class Font {
 private:
     void* inner;
-    Font(void* inner) : inner(inner) {}
 
 public:
+    Font(void* inner) : inner(inner) {}
     static Font load(std::filesystem::path path, float fontSize);
 
     void apply() const;

@@ -5,7 +5,11 @@ TABBY_NS_BEGIN
 
 Font Font::load(std::filesystem::path path, float fontSize) {
     ImFontConfig fontCfg;
-    fontCfg.GlyphExtraAdvanceX = -1.0f;
+    fontCfg.OversampleH = 3;
+    fontCfg.OversampleV = 3;
+    fontCfg.FontDataOwnedByAtlas = true;
+    // fontCfg.FontLoaderFlags |= IFontLoad
+    fontCfg.GlyphExtraAdvanceX = -1.0f * fontSize * 0.03f;
 
     ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF(path.string().c_str(), fontSize, &fontCfg);
 

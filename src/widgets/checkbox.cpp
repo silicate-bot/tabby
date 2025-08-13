@@ -1,6 +1,7 @@
 #include "widgets/checkbox.hpp"
 #include "imgui_internal.h"
 #include "widgets/animated.hpp"
+#include "util/config.hpp"
 
 using namespace ImGui;
 
@@ -12,6 +13,7 @@ WidgetState checkbox(std::string_view label, bool& value) {
         return WidgetState::idle();
 
     ImVec2 size = ImGui::GetContentRegionAvail();
+    size.x = tabby::TabbyGlobalCfg::get().widgetWidth;
 
     ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;
@@ -52,11 +54,17 @@ WidgetState checkbox(std::string_view label, bool& value) {
         pressed = true; // return value
         MarkItemEdited(id);
     }
+    
+    float uiScale = tabby::TabbyGlobalCfg::get().uiScale;
 
     const ImVec2 check_size = ImVec2(square_sz, square_sz);
+    
+    const float check_bg_size = 8.0f * uiScale;
+    const float leftmost_padding = 10.0f * uiScale;
+
     const ImRect check_bb(
-        ImVec2(pos.x + size.x - 16.0f, pos.y), 
-        ImVec2(pos.x + size.x, pos.y + size.y)
+        ImVec2(pos.x + size.x - check_bg_size * 2.0f - leftmost_padding, pos.y), 
+        ImVec2(pos.x + size.x - leftmost_padding, pos.y + size.y)
     );
     const bool mixed_value = (g.LastItemData.ItemFlags & ImGuiItemFlags_MixedValue) != 0;
     if (is_visible)
@@ -79,40 +87,60 @@ WidgetState checkbox(std::string_view label, bool& value) {
         }
 
         ImVec2 center_left = ImVec2(
-            check_bb.Min.x,
-            check_bb.Min.y + check_bb.GetHeight() * 0.5f
+            0,
+            check_bb.GetHeight() * 0.5f
         );
 
         ImVec2 center_right = ImVec2(
-            check_bb.Max.x,
-            check_bb.Min.y + check_bb.GetHeight() * 0.5f
+            check_bb.GetWidth(),
+            check_bb.GetHeight() * 0.5f
         );
 
         struct CirclePositionData {
             float x;
             float y;
+            float active;
+
+            ImColor color;
         };
         CirclePositionData& d = tabby::getStoredAnimValue(label, CirclePositionData{
             .x = center_left.x,
-            .y = center_left.y
+            .y = center_left.y,
+            .active = 0.0f,
+            .color = GetColorU32(ImGuiCol_Text)
         });
 
         d.x = tabby::interpolateValue(d.x, value ? center_right.x : center_left.x);
         d.y = tabby::interpolateValue(d.y, value ? center_right.y : center_left.y);
+        d.active = tabby::interpolateValue(d.active, value ? 1.0f : 0.0f);
 
-        ImVec2 circle_pos(d.x, d.y);
+        ImVec2 circle_pos(check_bb.Min.x + d.x, check_bb.Min.y + d.y);
+        d.color = tabby::interpolateValue(d.active, GetColorU32(ImGuiCol_Text), GetColorU32(ImGuiCol_TextDisabled));
 
         window->DrawList->AddRectFilled(
-            ImVec2(center_left.x - 1.0f, center_left.y - 3.0f),
-            ImVec2(center_right.x + 1.0f, center_right.y + 3.0f),
-            frame_col,
-            style.FrameRounding
+            ImVec2(check_bb.Min.x + center_left.x - check_bg_size, check_bb.Min.y + center_left.y - check_bg_size),
+            ImVec2(check_bb.Min.x + center_right.x + check_bg_size, check_bb.Min.y + center_right.y + check_bg_size),
+            GetColorU32(
+                hovered ? ImGuiCol_FrameBgActive : ImGuiCol_FrameBgHovered
+            ),
+            8.0f * uiScale
+        );
+
+        window->DrawList->AddRect(
+            ImVec2(check_bb.Min.x + center_left.x - check_bg_size, check_bb.Min.y + center_left.y - check_bg_size),
+            ImVec2(check_bb.Min.x + center_right.x + check_bg_size, check_bb.Min.y + center_right.y + check_bg_size),
+            GetColorU32(
+                hovered ? ImGuiCol_FrameBgActive : ImGuiCol_FrameBgHovered
+            ),
+            8.0f * uiScale,
+            0,
+            1.5f * uiScale
         );
 
         window->DrawList->AddCircleFilled(
             circle_pos,
-            6.0f,
-            GetColorU32(ImGuiCol_Text)
+            6.0f * uiScale,
+            d.color
         );
     }
     const ImVec2 label_pos = total_bb.Min;

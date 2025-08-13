@@ -7,24 +7,30 @@
 #include <vector>
 #include <concepts>
 
+#include "Windows.h"
+
 TABBY_NS_BEGIN
 
 class Context {
 public:
 
     struct CtxInitParams {
-#ifdef TABBY_USE_GLFW
-	void* glfwWindow;
-#endif
-#ifdef TABBY_USE_WIN32
 	void* hdc;
-#endif
     };
+
+    void* h_wnd = nullptr;
+
 
     void init(CtxInitParams params);
 
     void newFrame();
     void render();
+    bool handleWndproc(
+        HWND hWnd,
+        UINT msg,
+        WPARAM wParam,
+        LPARAM lParam
+    );
 
     template<typename F>
         requires std::is_invocable_v<F>

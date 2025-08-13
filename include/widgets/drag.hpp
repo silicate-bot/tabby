@@ -23,33 +23,33 @@ enum class DragType {
 };
 
 template<typename T> requires std::is_arithmetic_v<T>
-WidgetState drag(std::string_view label, T& value, T min = 0, T max = 100, float speed = 1.0f) {
+WidgetState drag(std::string_view label, T& value, T min = 0, T max = 100, float speed = 1.0f, std::string_view format = "{}") {
     if constexpr (std::is_same_v<T, uint8_t>) {
-        return _drag_impl(label, &value, &min, &max, speed, DragType::u8);
+        return _drag_impl(label, &value, &min, &max, speed, DragType::u8, format);
     } else if constexpr (std::is_same_v<T, uint16_t>) {
-        return _drag_impl(label, &value, &min, &max, speed, DragType::u16);
+        return _drag_impl(label, &value, &min, &max, speed, DragType::u16, format);
     } else if constexpr (std::is_same_v<T, uint32_t>) {
-        return _drag_impl(label, &value, &min, &max, speed, DragType::u32);
+        return _drag_impl(label, &value, &min, &max, speed, DragType::u32, format);
     } else if constexpr (std::is_same_v<T, uint64_t>) {
-        return _drag_impl(label, &value, &min, &max, speed, DragType::u64);
+        return _drag_impl(label, &value, &min, &max, speed, DragType::u64, format);
     } else if constexpr (std::is_same_v<T, int8_t>) {
-        return _drag_impl(label, &value, &min, &max, speed, DragType::i8);
+        return _drag_impl(label, &value, &min, &max, speed, DragType::i8, format);
     } else if constexpr (std::is_same_v<T, int16_t>) {
-        return _drag_impl(label, &value, &min, &max, speed, DragType::i16);
+        return _drag_impl(label, &value, &min, &max, speed, DragType::i16, format);
     } else if constexpr (std::is_same_v<T, int32_t>) {
-        return _drag_impl(label, &value, &min, &max, speed, DragType::i32);
+        return _drag_impl(label, &value, &min, &max, speed, DragType::i32, format);
     } else if constexpr (std::is_same_v<T, int64_t>) {
-        return _drag_impl(label, &value, &min, &max, speed, DragType::i64);
+        return _drag_impl(label, &value, &min, &max, speed, DragType::i64, format);
     } else if constexpr (std::is_same_v<T, float>) {
-        return _drag_impl(label, &value, &min, &max, speed, DragType::f32);
+        return _drag_impl(label, &value, &min, &max, speed, DragType::f32, format);
     } else if constexpr (std::is_same_v<T, double>) {
-        return _drag_impl(label, &value, &min, &max, speed, DragType::f64);
+        return _drag_impl(label, &value, &min, &max, speed, DragType::f64, format);
     } else {
         static_assert(std::is_arithmetic_v<T>, "Unsupported type for drag widget");
     }
 }
 
-WidgetState _drag_impl(std::string_view label, void* value, void* min, void* max, float speed, DragType t);
+WidgetState _drag_impl(std::string_view label, void* value, void* min, void* max, float speed, DragType t, std::string_view format);
 
 TABBY_NS_END
 

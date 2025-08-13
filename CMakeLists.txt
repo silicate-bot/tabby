@@ -38,6 +38,9 @@ set(SOURCES
     src/widgets/drag.cpp
     src/widgets/input.cpp
     src/widgets/checkbox.cpp
+    src/widgets/radio.cpp
+    src/widgets/dropdown.cpp
+    src/widgets/color.cpp
 
     src/context/context.cpp
 
@@ -47,46 +50,38 @@ set(SOURCES
 add_library(tabby STATIC ${SOURCES})
 add_library(tabby::tabby ALIAS tabby)
 
-target_include_directories(tabby PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_include_directories(tabby PUBLIC ${CMAKE_SOURCE_DIR}/lib/glad/include)
+target_include_directories(tabby PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(tabby PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/glad/include)
 
 # ImGUI
 if (NOT TABBY_NO_IMGUI)
     # CPMAddPackage("gh:ocornut/imgui#master")
-    set(imgui_SOURCE_DIR ${CMAKE_SOURCE_DIR}/lib/imgui_lib)
+    set(imgui_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui_lib)
+
+    # add_compile_definitions(IMGUI_ENABLE_FREETYPE)
+    # add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_CUSTOM)
 
     set(IM_SOURCES
-	${imgui_SOURCE_DIR}/imgui.cpp
-	${imgui_SOURCE_DIR}/imgui_draw.cpp
-	${imgui_SOURCE_DIR}/imgui_widgets.cpp
-	${imgui_SOURCE_DIR}/imgui_tables.cpp
-	${imgui_SOURCE_DIR}/imgui_demo.cpp
-	${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
+ ${imgui_SOURCE_DIR}/imgui.cpp
+ ${imgui_SOURCE_DIR}/imgui_draw.cpp
+ ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+ ${imgui_SOURCE_DIR}/imgui_tables.cpp
+ ${imgui_SOURCE_DIR}/imgui_demo.cpp
+ ${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_win32.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+  # ${imgui_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
     )
 
 
     if (TABBY_USE_GLFW)
-	CPMAddPackage("gh:glfw/glfw#master")
-	
-	add_compile_definitions(TABBY_USE_GLFW)
-	target_link_libraries(tabby PRIVATE glfw)
-	list(APPEND IM_SOURCES
-	    ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-	)
-    endif()
+        CPMAddPackage("gh:glfw/glfw#master")
 
-    if (TABBY_USE_WIN32)
-	add_compile_definitions(TABBY_USE_WIN32)
-	list(APPEND IM_SOURCES
-	    ${imgui_SOURCE_DIR}/backends/imgui_impl_win32.cpp
-	)
-    endif()
-
-    if (TABBY_USE_OPENGL3)
-	add_compile_definitions(TABBY_USE_OPENGL3)
-	list(APPEND IM_SOURCES
-	    ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-	)
+        add_compile_definitions(TABBY_USE_GLFW)
+        target_link_libraries(tabby PRIVATE glfw)
+        list(APPEND IM_SOURCES
+     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+ )
     endif()
 
     target_include_directories(tabby PRIVATE ${imgui_SOURCE_DIR})
@@ -96,7 +91,7 @@ endif()
 # Tests
 if (TABBY_BUILD_TESTS)
     set(TEST_SOURCES
-	tests/main.cpp
+ tests/main.cpp
     )
 
     add_executable(tabbytest ${TEST_SOURCES})
