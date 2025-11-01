@@ -67,7 +67,7 @@ static WidgetState _button(std::string_view content, float width = 1.0f, bool bo
         ImVec2(bb.Min.x + g.Style.FramePadding.x, bb.Min.y + g.Style.FramePadding.y),
         ImVec2(bb.Max.x - g.Style.FramePadding.x, bb.Max.y - g.Style.FramePadding.y),
         content.data(), NULL, &label_size, ImVec2(textJustify, 0.5f), &bb);
-    
+
     return WidgetState{
         .pressed = pressed,
         .hovered = hovered,

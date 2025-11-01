@@ -1183,9 +1183,9 @@ ImRect ImGui::GetWindowScrollbarRect(ImGuiWindow* window, ImGuiAxis axis) {
                                1];  // (ScrollbarSizes.x = width of Y scrollbar;
                                     // ScrollbarSizes.y = height of X scrollbar)
     IM_ASSERT(scrollbar_size >= 0.0f);
-    const float border_size = IM_ROUND(window->WindowBorderSize * 0.5f);
+    const float border_size = g.Style.WindowPadding.y;
     const float border_top = (window->Flags & ImGuiWindowFlags_MenuBar)
-                                 ? IM_ROUND(g.Style.FrameBorderSize * 0.5f)
+                                 ? IM_ROUND(g.Style.WindowPadding.y * 1.0f)
                                  : 0.0f;
     if (axis == ImGuiAxis_X)
         return ImRect(inner_rect.Min.x + border_size,
@@ -1194,10 +1194,9 @@ ImRect ImGui::GetWindowScrollbarRect(ImGuiWindow* window, ImGuiAxis axis) {
                       inner_rect.Max.x - border_size,
                       outer_rect.Max.y - border_size);
     else
-        return ImRect(ImMax(outer_rect.Min.x,
-                            outer_rect.Max.x - border_size - scrollbar_size),
-                      inner_rect.Min.y + border_top,
-                      outer_rect.Max.x - border_size,
+        return ImRect(outer_rect.Max.x - scrollbar_size,
+                      inner_rect.Min.y + border_size,
+                      outer_rect.Max.x,
                       inner_rect.Max.y - border_size);
 }
 
@@ -1221,9 +1220,9 @@ void ImGui::Scrollbar(ImGuiAxis axis) {
             rounding_corners |= ImDrawFlags_RoundCornersBottomRight;
     }
     float size_visible =
-        window->InnerRect.Max[axis] - window->InnerRect.Min[axis];
+        window->InnerRect.Max[axis] - window->InnerRect.Min[axis] - g.Style.WindowPadding.y * 2.0;
     float size_contents =
-        window->ContentSize[axis] + window->WindowPadding[axis] * 2.0f;
+        window->ContentSize[axis] - g.Style.WindowPadding.y * 2.0;
     ImS64 scroll = (ImS64)window->Scroll[axis];
     ScrollbarEx(bb, id, axis, &scroll, (ImS64)size_visible,
                 (ImS64)size_contents, rounding_corners);
@@ -1361,6 +1360,7 @@ bool ImGui::ScrollbarEx(const ImRect& bb_frame, ImGuiID id, ImGuiAxis axis,
                                        : hovered ? ImGuiCol_ScrollbarGrabHovered
                                                  : ImGuiCol_ScrollbarGrab,
                                        alpha);
+
     window->DrawList->AddRectFilled(bb_frame.Min, bb_frame.Max, bg_col,
                                     window->WindowRounding,
                                     draw_rounding_flags);
@@ -1967,6 +1967,7 @@ void ImGui::SeparatorEx(ImGuiSeparatorFlags flags, float thickness) {
         // Horizontal Separator
         float x1 = window->DC.CursorPos.x;
         float x2 = window->WorkRect.Max.x;
+        x2 = window->Pos.x + tabby::TabbyGlobalCfg::get().widgetWidth;
 
         // Preserve legacy behavior inside Columns()
         // Before Tables API happened, we relied on Separator() to span all
@@ -1979,7 +1980,7 @@ void ImGui::SeparatorEx(ImGuiSeparatorFlags flags, float thickness) {
         if (columns) {
             x1 = window->Pos.x +
                  window->DC.Indent.x;  // Used to be Pos.x before 2023/10/03
-            x2 = window->Pos.x + window->Size.x;
+            x2 = window->Pos.x + tabby::TabbyGlobalCfg::get().widgetWidth;
             PushColumnsBackground();
         }
 

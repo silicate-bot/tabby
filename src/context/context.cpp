@@ -22,6 +22,13 @@ namespace tabby
 		ImGui::GetIO().BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 	}
 
+	void Context::destroy() {
+    	ImGui_ImplWin32_Shutdown();
+    	ImGui_ImplOpenGL3_Shutdown();
+
+	    ImGui::DestroyContext();
+	}
+
 	void Context::newFrame() {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplWin32_NewFrame();

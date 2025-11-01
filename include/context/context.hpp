@@ -22,6 +22,7 @@ public:
 
 
     void init(CtxInitParams params);
+    void destroy();
 
     void newFrame();
     void render();

@@ -1,5 +1,6 @@
 #include "widgets/window.hpp"
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "util/config.hpp"
 
 TABBY_NS_BEGIN
@@ -47,11 +48,16 @@ double _window_begin(std::string_view content) {
     style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(1.0f, 1.0f, 1.0f, 0.2f);
     style.Colors[ImGuiCol_TextDisabled] = ImVec4(1.0f, 1.0f, 1.0f, 0.4f);
 
+    style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(1.0f, 1.0f, 1.0f, 0.4f);
+    style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(1.0f, 1.0f, 1.0f, 0.6f);
+    style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(1.0f, 1.0f, 1.0f, 0.6f);
+
     style.Colors[ImGuiCol_CheckMark] = ImVec4(1.0f, 1.0f, 1.0f, 0.8f);
 
     style.FontScaleMain = uiScale;
 
-    ImGui::Begin(content.data(), 0, 
+    ImGui::Begin(content.data(), 0,
         ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_NoScrollbar |
         ImGuiWindowFlags_NoScrollWithMouse |
@@ -96,7 +102,7 @@ std::pair<float, float> _section_begin(std::string_view title, float width, bool
     //     ImGui::SetCursorPosX(0);
     // }
 
-    int flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground;
+    int flags = ImGuiWindowFlags_NoBackground;
     if (!width_is_auto) {
         flags |= ImGuiWindowFlags_NoScrollWithMouse;
     }
@@ -122,10 +128,14 @@ std::pair<float, float> _section_begin(std::string_view title, float width, bool
         width -= ImGui::GetStyle().WindowPadding.x;
     }
 
+
     ImGui::BeginChild(title.data(), ImVec2(
-        width - ImGui::GetStyle().WindowPadding.x + initialWindowPadding.x, 
-        ImGui::GetWindowSize().y  - ImGui::GetStyle().WindowPadding.y + initialWindowPadding.y
+        width + initialWindowPadding.x,
+        // width - ImGui::GetStyle().WindowPadding.x + initialWindowPadding.x,
+        // ImGui::GetWindowSize().y  - ImGui::GetStyle().WindowPadding.y + initialWindowPadding.y
+        ImGui::GetWindowSize().y
     ), false, flags);
+    ImGui::SetScrollX(0);
 
     ImGui::SetCursorPosY(ImGui::GetStyle().WindowPadding.y);
 
@@ -153,6 +163,7 @@ double _fraction_getSpacing() {
 }
 
 void _section_end(float new_pos) {
+    ImGui::Dummy(ImVec2(tabby::TabbyGlobalCfg::get().widgetWidth, ImGui::GetStyle().WindowPadding.y));
     ImGui::EndChild();
 
     float padding = ImGui::GetStyle().WindowPadding.y;
