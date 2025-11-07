@@ -27,12 +27,12 @@ WidgetState input_text(
     InputTextData inputData = { &buffer };
 
     if (ImGui::InputTextEx(
-        label.data(), 
-        hint.data(), 
-        buffer.data(), 
+        label.data(),
+        hint.data(),
+        buffer.data(),
         buffer.capacity() + 1,
-        ImVec2(0.0f, 0.0f), 
-        ImGuiInputTextFlags_CallbackResize, 
+        ImVec2(0.0f, 0.0f),
+        ImGuiInputTextFlags_CallbackResize,
         historyCallback,
         &inputData
     )) {
@@ -82,7 +82,7 @@ static int inputCallback(ImGuiInputTextCallbackData* data) {
 static void drawPopup(
     std::string_view label,
     AutocompleteState& state,
-    const ImVec2& pos, 
+    const ImVec2& pos,
     const ImVec2& size,
     std::function<void()> renderPopup = nullptr
 ) {
@@ -119,8 +119,8 @@ static void drawPopup(
     // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     // ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 
-    ImGuiWindowFlags flags = 
-        ImGuiWindowFlags_NoTitleBar          | 
+    ImGuiWindowFlags flags =
+        ImGuiWindowFlags_NoTitleBar          |
         ImGuiWindowFlags_NoResize            |
         ImGuiWindowFlags_NoMove              |
         ImGuiWindowFlags_NoScrollbar |
@@ -137,7 +137,7 @@ static void drawPopup(
     // enumerate suggestions
     for (size_t i = 0; i < state.suggestions.size(); ++i) {
         auto& suggestion = state.suggestions.at(i);
-        bool isSelected = (state.selectedIndex == static_cast<int>(i));        
+        bool isSelected = (state.selectedIndex == static_cast<int>(i));
         bool isHighlighted = (state.highlightedIndex == static_cast<int>(i));
 
         if (isSelected || isHighlighted) {
@@ -213,7 +213,7 @@ WidgetState input_text_autocomplete(
         buffer.data(),
         buffer.size() + 1,
         ImVec2(0.0f, 0.0f),
-        ImGuiInputTextFlags_CallbackResize | 
+        ImGuiInputTextFlags_CallbackResize |
         ImGuiInputTextFlags_CallbackCompletion |
         ImGuiInputTextFlags_CallbackHistory |
         ImGuiInputTextFlags_CallbackEdit |

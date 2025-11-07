@@ -5692,7 +5692,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf,
     ImVec2 size_half = ImVec2(size.x * 0.5f, size.y);
 
     const ImVec2 frame_size =
-        ImVec2(size.x - label_size.x - style.ItemInnerSpacing.x, size.y);
+        ImVec2(size.x * 0.5f + ImGui::GetStyle().ItemSpacing.x / 2.0f, size.y);
     const ImVec2 total_size = size;
 
     const ImRect frame_bb(window->DC.CursorPos + total_size - size_half +
@@ -6790,10 +6790,11 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf,
             (buf_display_end - buf_display) < buf_display_max_length) {
             ImU32 col = GetColorU32(is_displaying_hint ? ImGuiCol_TextDisabled
                                                        : ImGuiCol_Text);
+            ImVec4 actual = frame_bb.ToVec4();
 
             draw_window->DrawList->AddText(
                 g.Font, g.FontSize, animated_draw_pos, col, buf_display,
-                buf_display_end, 0.0f, is_multiline ? NULL : &clip_rect);
+                buf_display_end, 0.0f, &actual);
         }
 
         // Draw blinking cursor
@@ -6869,10 +6870,12 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf,
                 /*state ? ImVec2(state->Scroll.x, 0.0f) :*/ ImVec2(
                     0.0f, 0.0f);  // Preserve scroll when inactive?
             ImU32 col = GetColorU32(is_displaying_hint ? ImGuiCol_TextDisabled
+
                                                        : ImGuiCol_Text);
+            ImVec4 actual = frame_bb.ToVec4();
             draw_window->DrawList->AddText(
                 g.Font, g.FontSize, draw_pos - draw_scroll, col, buf_display,
-                buf_display_end, 0.0f, is_multiline ? NULL : &clip_rect);
+                buf_display_end, 0.0f, &actual);
         }
     }
 
