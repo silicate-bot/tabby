@@ -47,19 +47,30 @@ static void drawPopup(std::string_view label, const ImVec2& pos,
 
     ImGuiWindowFlags flags =
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
         ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
         ImGuiWindowFlags_Tooltip;
 
     std::string popupName = std::string(label) + "_popup";
 
     ImGui::Begin(popupName.c_str(), nullptr, flags);
+    ImGuiWindow* wnd = ImGui::GetCurrentWindow();
 
     if (renderPopup) {
         renderPopup();
     }
 
-    tabby::text("sex");
+    ImGui::PushItemWidth(
+        ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x * 2.0
+    );
+    ImGui::ColorPicker4("INTERNAL___color_picker", state.colors.data(),
+        ImGuiColorEditFlags_NoAlpha |
+        ImGuiColorEditFlags_NoOptions |
+        ImGuiColorEditFlags_NoLabel |
+        ImGuiColorEditFlags_NoSidePreview |
+        ImGuiColorEditFlags_NoSmallPreview |
+        ImGuiColorEditFlags_NoTooltip
+    );
 
     auto window = ImGui::GetCurrentWindow();
 
@@ -108,7 +119,9 @@ tabby::WidgetState color(std::string_view label, tabby::ColorState& state,
 
     wnd->DC.CursorPos = ImVec2(pos_max.x - ImGui::GetFrameHeight(), pos.y);
 
-    if (ImGui::ColorButton("##ColorBtn", colorsImgui,
+    std::string idColorBtn = std::string("##ColorBtn") + std::string(label);
+
+    if (ImGui::ColorButton(idColorBtn.data(), colorsImgui,
                            ImGuiColorEditFlags_NoTooltip)) {
         state.showPopup = !state.showPopup;
     }
@@ -119,7 +132,7 @@ tabby::WidgetState color(std::string_view label, tabby::ColorState& state,
         label,
         ImVec2(ImGui::GetItemRectMax().x - popupSize,
                ImGui::GetItemRectMax().y + ImGui::GetStyle().ItemSpacing.y),
-        ImVec2(popupSize, ImGui::GetTextLineHeight() * 4.0), state,
+        ImVec2(popupSize, 180.0 * tabby::TabbyGlobalCfg::get().uiScale), state,
         renderPopup);
 
     return w;
