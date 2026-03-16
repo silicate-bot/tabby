@@ -245,6 +245,15 @@ WidgetState input_text_autocomplete(
 
     bool lostFocus = !ImGui::IsItemActive();
 
+    if (ImGui::GetItemRectMin().y < ImGui::GetCurrentWindow()->Rect().GetTL().y ||
+        ImGui::GetItemRectMax().y > ImGui::GetCurrentWindow()->Rect().GetBL().y) {
+        state.showPopup = false;
+        state.selectedIndex = -1;
+        state.highlightedIndex = -1;
+        state.clickedIndex = -1;
+        state.needsScroll = false;
+    }
+
     float uiScale = tabby::TabbyGlobalCfg::get().uiScale;
     drawPopup(
         label,

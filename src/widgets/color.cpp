@@ -128,6 +128,11 @@ tabby::WidgetState color(std::string_view label, tabby::ColorState& state,
 
     float popupSize = ImGui::GetWindowWidth() / 2.0;
 
+    if (ImGui::GetItemRectMin().y < ImGui::GetCurrentWindow()->Rect().GetTL().y ||
+        ImGui::GetItemRectMax().y > ImGui::GetCurrentWindow()->Rect().GetBL().y) {
+        state.showPopup = false;
+    }
+
     drawPopup(
         label,
         ImVec2(ImGui::GetItemRectMax().x - popupSize,

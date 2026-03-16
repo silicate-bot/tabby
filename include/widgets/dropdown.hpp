@@ -22,7 +22,7 @@ struct DropdownState {
 
 WidgetState dropdown(std::string_view label, DropdownState& state,
                      int& selectedIndex,
-                     std::function<void()> renderPopup = nullptr);
+                     std::function<void()> renderPopup = nullptr, bool visibleLabel = true);
 
 TABBY_NS_END
 

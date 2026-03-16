@@ -41,10 +41,11 @@ set(SOURCES
     src/widgets/radio.cpp
     src/widgets/dropdown.cpp
     src/widgets/color.cpp
+    src/widgets/overlay.cpp
 
     src/context/context.cpp
 
-    # lib/glad/src/gl.c
+        # lib/glad/src/gl.c
 )
 
 add_library(tabby STATIC ${SOURCES})

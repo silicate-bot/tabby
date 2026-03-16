@@ -113,6 +113,7 @@ static void drawPopup(std::string_view label, const ImVec2& pos,
         state.showPopup = false;
     }
 
+
     ImGui::End();
     ImGui::PopStyleVar(5);
     // ImGui::PopStyleColor();
@@ -120,7 +121,7 @@ static void drawPopup(std::string_view label, const ImVec2& pos,
 
 static WidgetState _button(std::string_view content, std::string_view preview,
                            ImGuiButtonFlags flags = ImGuiButtonFlags_None,
-                           bool active = false, bool border = true) {
+                           bool active = false, bool border = true, bool labelVisible = true) {
     ImGuiWindow* wnd = ImGui::GetCurrentWindow();
 
     ImVec2 size = ImVec2(tabby::TabbyGlobalCfg::get().widgetWidth, 0.0f);
@@ -141,10 +142,15 @@ static WidgetState _button(std::string_view content, std::string_view preview,
                             label_size.y + g.Style.FramePadding.y * 2.0f);
 
     float halfWidth = size.x * 0.5f;
+    float space = ImGui::GetStyle().ItemSpacing.x / 2.0;
+    if (content.empty() || !labelVisible) {
+        halfWidth = size.x;
+        space = 0.0;
+    }
 
     ImRect total_bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
     ImRect frame_bb(ImVec2(pos.x + size.x - halfWidth +
-                               ImGui::GetStyle().ItemSpacing.x / 2.0,
+                               space,
                            pos.y),
                     ImVec2(pos.x + size.x, pos.y + size.y));
 
@@ -192,11 +198,17 @@ static WidgetState _button(std::string_view content, std::string_view preview,
     ImGui::RenderFrame(frame_bb.Min, frame_bb.Max, animated.bgColor, true,
                        g.Style.FrameRounding);
 
-    ImGui::RenderTextClipped(ImVec2(pos.x, pos.y + g.Style.FramePadding.y),
-                             ImVec2(pos.x + halfWidth - g.Style.FramePadding.x,
-                                    pos.y + size.y - g.Style.FramePadding.y),
-                             content.data(), NULL, &label_size,
-                             ImVec2(0.0f, 0.5f), &total_bb);
+    if (!labelVisible) {
+        halfWidth = 0.0;
+    }
+
+    if (labelVisible) {
+        ImGui::RenderTextClipped(ImVec2(pos.x, pos.y + g.Style.FramePadding.y),
+                                 ImVec2(pos.x + halfWidth - g.Style.FramePadding.x,
+                                        pos.y + size.y - g.Style.FramePadding.y),
+                                 content.data(), NULL, &label_size,
+                                 ImVec2(0.0f, 0.5f), &total_bb);
+    }
 
     const ImVec2 previewSize = ImGui::CalcTextSize(preview.data(), NULL, true);
     ImGui::RenderTextClipped(ImVec2(pos.x + halfWidth + g.Style.FramePadding.x,
@@ -224,12 +236,17 @@ static WidgetState _button(std::string_view content, std::string_view preview,
 }
 
 WidgetState dropdown(std::string_view label, DropdownState& state,
-                     int& selectedIndex, std::function<void()> renderPopup) {
+                     int& selectedIndex, std::function<void()> renderPopup, bool labelVisible) {
     tabby::WidgetState widgetState = tabby::WidgetState::idle();
     state.selectedIndex = std::clamp(
         selectedIndex, 0, static_cast<int>(state.options.size()) - 1);
 
-    if (_button(label, state.options[state.selectedIndex]).pressed) {
+    if (_button(label,
+        state.options[state.selectedIndex],
+        ImGuiButtonFlags_None,
+        false,
+        true,
+        labelVisible).pressed) {
         state.showPopup = !state.showPopup;
     }
 
@@ -237,11 +254,13 @@ WidgetState dropdown(std::string_view label, DropdownState& state,
         static_cast<float>(std::min((int)state.options.size(), 5));
 
     float uiScale = tabby::TabbyGlobalCfg::get().uiScale;
+    float offset = labelVisible ? (ImGui::GetItemRectMin().x + ImGui::GetItemRectMax().x) / 2.0f : ImGui::GetItemRectMin().x;
+    float size = labelVisible ? 0.5f : 1.0f;
     drawPopup(
         label,
-        ImVec2((ImGui::GetItemRectMin().x + ImGui::GetItemRectMax().x) / 2.0f,
+        ImVec2(offset,
                ImGui::GetItemRectMax().y + ImGui::GetStyle().ItemSpacing.y),
-        ImVec2(ImGui::GetItemRectSize().x / 2.0f,
+        ImVec2(ImGui::GetItemRectSize().x * size,
                ImGui::GetTextLineHeight() * itemCount +
                    6.0f * uiScale * itemCount + 24.0f * uiScale),
         state, renderPopup);
@@ -251,6 +270,12 @@ WidgetState dropdown(std::string_view label, DropdownState& state,
         state.selectedIndex = selectedIndex;
         state.clickedIndex = -1;
         widgetState.changed = true;
+    }
+
+
+    if (ImGui::GetItemRectMin().y < ImGui::GetCurrentWindow()->Rect().GetTL().y ||
+        ImGui::GetItemRectMax().y > ImGui::GetCurrentWindow()->Rect().GetBL().y) {
+        state.showPopup = false;
     }
 
     return widgetState;

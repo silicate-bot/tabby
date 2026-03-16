@@ -12,6 +12,7 @@
 #include "widgets/input.hpp"
 #include "widgets/layout.hpp"
 #include "widgets/radio.hpp"
+#include "widgets/overlay.hpp"
 #include "widgets/text.hpp"
 #include "widgets/window.hpp"
 
