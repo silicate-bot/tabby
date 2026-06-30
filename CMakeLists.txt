@@ -53,6 +53,7 @@ add_library(tabby::tabby ALIAS tabby)
 
 target_include_directories(tabby PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(tabby PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/glad/include)
+target_include_directories(tabby PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui_lib)
 
 # ImGUI
 if (NOT TABBY_NO_IMGUI)
