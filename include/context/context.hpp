@@ -3,9 +3,9 @@
 
 #include "util/defines.hpp"
 
+#include <concepts>
 #include <functional>
 #include <vector>
-#include <concepts>
 
 #include "Windows.h"
 
@@ -13,33 +13,27 @@ TABBY_NS_BEGIN
 
 class Context {
 public:
+  struct CtxInitParams {
+    void *hdc;
+  };
 
-    struct CtxInitParams {
-	void* hdc;
-    };
+  void *h_wnd = nullptr;
 
-    void* h_wnd = nullptr;
+  void init(CtxInitParams params);
+  void destroy();
+  void reinit(CtxInitParams params);
 
+  void newFrame();
+  void render();
+  bool handleWndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-    void init(CtxInitParams params);
-    void destroy();
-
-    void newFrame();
-    void render();
-    bool handleWndproc(
-        HWND hWnd,
-        UINT msg,
-        WPARAM wParam,
-        LPARAM lParam
-    );
-
-    template<typename F>
-        requires std::is_invocable_v<F>
-    void draw(F&& f) {
-        this->newFrame();
-		f();
-        this->render();
-    }
+  template <typename F>
+    requires std::is_invocable_v<F>
+  void draw(F &&f) {
+    this->newFrame();
+    f();
+    this->render();
+  }
 };
 
 TABBY_NS_END
